@@ -141,7 +141,7 @@ int main () {
 			}
 		}
 		end_time=clock();
-		double time_sec = end_time - start_time / CLOCKS_PER_SEC;
+		double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 		printf ( "%lf sec \n" , time_sec);
 		printf ("biggest: %d , %dth\n" , lst -> rear -> prev -> key , size(lst) );
 		exit (0);
@@ -190,7 +190,7 @@ int main () {
 	}
 
 	end_time=clock();
-	double time_sec = end_time - start_time / CLOCKS_PER_SEC;
+	double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 	printf ( "%lf sec \n" , time_sec);
 	printf ("biggest: %d , %dth\n" , lst -> rear -> prev -> key , size(lst) );
 	exit (0);
