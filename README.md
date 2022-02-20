@@ -1,2 +1,2 @@
-# Double Linked List qsort
- -qsort for double linked list
+#Primes
+--for fun--
