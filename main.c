@@ -11,7 +11,6 @@
 #include <pthread.h>
 #include <stdint.h>
 #include <semaphore.h>
-#define EXIT 0
 struct timespec start_time , end_time;
 short thread_Num ;
 typedef struct {
@@ -186,9 +185,9 @@ int main () {
 
 	}
 	clock_gettime (CLOCK_MONOTONIC , &end_time ); 
-	double time_taken = (end_time.tv_sec - start_time.tv_sec) * 1e9 + (end_time.tv_nsec - start_time.tv_nsec) ;
-	time_taken *= 1e-9;
-	printf ( "%lf s\n" , time_taken);
+	int time_sec = end_time.tv_sec - start_time.tv_sec ;
+       	double time_ns = end_time.tv_nsec - start_time.tv_nsec ;
+	printf ( "%d.%lf sec \n" , time_sec , time_ns);
 	printf ("biggest: %d , %dth\n" , lst -> rear -> prev -> key , size(lst) );
 	exit (0);
 
