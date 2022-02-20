@@ -1,0 +1,155 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include "list.h"
+#include <math.h>
+#include <stdbool.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+#include <pthread.h>
+typedef struct {
+	list ** lst ;
+	int    num ;
+} prime_t ;
+int compare ( const void *a , const void *b) {
+	return *(int *)a - *(int *)b;
+}
+int ret;
+list rlist [3];
+int run_thread_a = 0;
+pthread_mutex_t run_lock_a = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t run_cond_a = PTHREAD_COND_INITIALIZER;
+
+int run_thread_b = 0;
+pthread_mutex_t run_lock_b = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t run_cond_b = PTHREAD_COND_INITIALIZER;
+
+
+void * thread_Main() { 
+thread_mutex_lock(&run_lock_a);
+	while (!run_thread_a)
+		pthread_cond_wait(&run_cond_a, &run_lock_a);
+	run_thread_a = 0;
+	pthread_mutex_unlock(&run_lock_a);
+	init_list (rlist);
+	register int  i;
+	register bool prflag=true ;
+	int thsize = LIM;
+	push (rlist , 2 );
+	for ( i = 3 ; i < thsize ; i += 2 ) {
+		node * this_nd = find ( rlist , i );
+		if ( -1 != this_nd -> key ) {
+			continue;
+		}
+		prflag = true;
+		node * nd = rlist->front->next ; 		
+		for ( nd = rlist->front -> next ; nd != rlist->rear ; nd = nd -> next ) {
+			register int j = nd -> key ;
+			if ( i % j == 0 ) {
+				prflag = false;
+				break;
+			}
+		}
+		if ( prflag ) {
+			push ( rlist, i );
+		}
+		i = (rlist->rear -> prev -> key) + 2;
+
+	}
+	pthread_mutex_lock(&run_lock_b);
+	run_thread_b = 1;
+	pthread_cond_signal(&run_cond_b);
+	pthread_mutex_unlock(&run_lock_b);
+	return NULL;
+}
+
+
+void * thread_Prime(void * arg) { 
+    pthread_mutex_lock(&run_lock_b);
+    while (!run_thread_b)
+        pthread_cond_wait(&run_cond_b, &run_lock_b);
+    run_thread_b = 0;
+    pthread_mutex_unlock(&run_lock_b);
+	list ** lst = args.lst ;
+	list * thls = *lst;
+	register int  i;
+	register bool prflag=true ;
+	int fl = args.num;
+	int thsize = LIM;
+	for ( i = 0 ; i < 3 ; i ++ ) {
+		if ( i == args.num ) {
+			continue;
+		}
+		while ( subflag[i] ){
+			usleep (sqrt(i));
+		}
+	}
+		
+	memcpy ( (rlist+fl),thls , sizeof (node)*(size(rlist+fl)+2));
+	for ( i = 3 ; i < thsize ; i += 2 ) {
+		while ( mainflag ) {
+			usleep (sqrt(i));
+		}
+	       	memcpy ( (rlist+fl) , thls , sizeof ( node ) * (size ( thls ) + 2) ) ;
+		node * this_nd = find ( (rlist+fl) , i );
+		if ( -1 != this_nd -> key ) {
+			continue;
+		}
+		prflag = true;
+		node * nd = (rlist+fl)->front->next ; 		
+		for ( nd = (rlist+fl)->front -> next ; nd != (rlist+fl)->rear ; nd = nd -> next ) {
+			register int j = nd -> key ;
+			if ( i % j == 0 ) {
+				prflag = false;
+				break;
+			}
+		}
+		if ( prflag ) {
+			push ( (rlist+fl), i );
+		}
+		i = ((rlist+fl)->rear -> prev -> key) + 2;
+
+	}
+
+	 pthread_mutex_lock(&run_lock_a);
+    run_thread_a = 1;
+    pthread_cond_signal(&run_cond_a);
+    pthread_mutex_unlock(&run_lock_a);
+	return NULL;
+}
+
+int main () {
+	struct timespec start , end;
+	clock_gettime( CLOCK_MONOTONIC , &start);
+	pthread_t pthlist [4];
+	int n ;
+	list * reslist = malloc (sizeof (list ));
+	init_list ( reslist );
+	pthread_create ( pthlist,NULL,thread_Main,NULL);
+	for ( n = 1 ; n < 3; n++ ) {
+		pthread_create ( (pthlist + n ), NULL , thread_Prime , (void *)&(prime_t){&reslist , n } ) ;
+		pthread_join ( pthlist[n] , NULL ) ;
+	}
+
+	pthread_join ( pthlist[0] , NULL ) ;
+	for ( n = 1 ; n < 3; n ++ ) {
+		static node *nd;
+		for ( nd = (rlist+n) -> front -> next ; nd != (rlist+n) -> rear ; nd = nd -> next ) {
+			push ( rlist , nd -> key );
+		}
+	}
+	clock_gettime(CLOCK_MONOTONIC , &end);
+	double time_taken = (end.tv_sec - start.tv_sec) * 1e9 + (end.tv_nsec - start.tv_nsec) ;
+	time_taken *= 1e-9;
+	sort_func ( reslist );
+	int res = reslist -> rear -> prev  -> key;
+	 
+	if ( res > 0 ) {
+		printf ( "%u\n", res );
+	}
+	free_list (reslist);
+	printf ( "%lf\n" , time_taken ) ;
+}
+
