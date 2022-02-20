@@ -1,2 +1,2 @@
 #Primes
---for fun--
+-for fun
