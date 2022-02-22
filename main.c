@@ -17,21 +17,25 @@ typedef struct {
 	ll start;
 	ll end;
 	ll length;
+	ll num ;
 	list * lst;
 } range_t;
 sem_t sema;
 ll fl;
 void * t_Prime (void *arg) { 
-	sem_wait(&sema);
 	range_t range_struct = *(range_t *)arg;
 	list * lst = (list *)range_struct.lst;
 	ll start = (ll)range_struct.start;
 	ll end = (ll)range_struct.end;
 	ll length = (ll)range_struct.length;
+	ll num = (ll)range_struct.num;
 	register ll i=3 ;
 	node * nd = find ( lst , 3 ) ;
 	ll key = nd -> key;
 	bool prflag;
+	if ( num != 0 && size (lst ) > 2 ) {
+		sem_wait(&sema);
+	}
 
 	prflag=true;
 	for ( i =start ;i < end ; i+=2 ) {
@@ -86,7 +90,7 @@ int main () {
 	ll length;
 	printf ( "How much do you want? 5 - ??? " );
 	scanf ("%lld" , &length );
-	if ( length < 40000 ) {
+	if ( length < 4000000 ) {
 		bool prflag;
 		register ll i , j;
 		for ( i = 3 ;; i += 2 ) {
@@ -139,13 +143,14 @@ int main () {
 			n %= thread_Num;
 		}
 		range.lst = lst;
+		range.num = n;
 		range.length=length;
 		if ( n != 0 ) {
 			range.start=range.end;
 		} else {
 			range.start=5;
 		}	
-		range.end+=10000;
+		range.end+=1000000;
 		pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range ) ;
 		pthread_join ( pthlist[n],NULL);
 		show ( lst );
