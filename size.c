@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 // return size of list
-int size ( list * lst ) {
+ll size ( list * lst ) {
 	return lst -> size ;
 }
 

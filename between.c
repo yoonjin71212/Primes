@@ -3,7 +3,7 @@
 #include "list.h"
 #include <string.h>
 // add number between two nodes
-void between( list * lst , int item , node * b , node * n ) {
+void between( list * lst , ll item , node * b , node * n ) {
     node * element ;
     if ( ( element = ( node * ) malloc ( sizeof ( node ) ) ) == NULL ) {
         return ;
@@ -21,7 +21,7 @@ void between( list * lst , int item , node * b , node * n ) {
     }
     lst -> size ++ ;
 }
-void push ( list * lst , int item ) {
+void push ( list * lst , ll item ) {
 	if ( lst -> size != 0 )	{
 		if ( lst -> rear -> prev -> key > item ) {
 			lst -> is_sorted = 0;

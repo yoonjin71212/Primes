@@ -1,6 +1,6 @@
 #include "list.h"
 // XOR swap
-void swap ( int * a , int * b ) {
+void swap ( ll * a , ll * b ) {
 	if ( * a == * b ) {
 		return;
 	}

@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include "list.h"
 // function that removes the item
-int remove_item ( list * lst , node * element )
+ll remove_item ( list * lst , node * element )
 {	
-	int val;
+	ll val;
 	if ( element == NULL ) {
 		val = -1 ;
     } else if ( lst -> size == 0 ) {
@@ -20,7 +20,7 @@ int remove_item ( list * lst , node * element )
     }
 	return val ;
 }
-int pop_item ( list * lst ) {
-	int i = remove_item ( lst , lst -> rear -> prev ) ;
+ll pop_item ( list * lst ) {
+	ll i = remove_item ( lst , lst -> rear -> prev ) ;
 	return i;
 }

@@ -14,84 +14,58 @@
 clock_t start_time , end_time;
 short thread_Num ;
 typedef struct {
-	int start;
-	int end;
-	int num;
+	ll start;
+	ll end;
+	ll length;
 	list * lst;
 } range_t;
 sem_t sema;
-int fl;
+ll fl;
 void * t_Prime (void *arg) { 
 	sem_wait(&sema);
 	range_t range_struct = *(range_t *)arg;
-	list * thrlist = (list *)range_struct.lst;
-	int num = (int)range_struct.num;
+	list * lst = (list *)range_struct.lst;
+	ll start = (ll)range_struct.start;
+	ll end = (ll)range_struct.end;
+	ll length = (ll)range_struct.length;
+	register ll i=3 ;
+	node * nd = find ( lst , 3 ) ;
+	ll key = nd -> key;
 	bool prflag;
-	int start = (int)range_struct.start;
-	int end = (int)range_struct.end;
-	register int i=5 ;
-	if ( (num == 0 ) | ( size ( thrlist )  < 3 ) ) {
-		start_time=clock();
-		register int j;
-		for ( i = start ; i < end ; i += 2 ) {
-			prflag=true;
-			j = 3;
-			while ( true ) {
-				if ( j >= i ) {
-					break;
-				} 
-				if ( (i % j == 0) ) {
-					prflag = false;
-					break;
-				} 
-				j+=2;
-					
-			}
 
-			if ( (prflag  == true) && (i != 0)){
-				push ( thrlist, i );
-
-			}
-
-		}
-
-	} else {
-		node * nd = find ( thrlist , 3 ) ;
-		int key = nd -> key;
-		bool prflag;
-
-		prflag=true;
-			for ( i =start ;i < end ; i+=2 ) {
-			for ( ; ( key < i ) && ( nd !=thrlist->rear ) ;nd=nd->next ) {
+	prflag=true;
+	for ( i =start ;i < end ; i+=2 ) {
+		for ( ; ( key < i ) && ( nd !=lst->rear ) ;nd=nd->next ) {
 			while ( key == 0 ) {
 				nd = nd -> next;
 				key = nd -> key;
 			}
-				if ( i % key == 0 && ( i != key ) ) {
-					prflag = false;
-					break;
-				} 
-			}
+			if ( i % key == 0 && ( i != key ) ) {
+				prflag = false;
+				break;
+			} 
+		}
 
-			if ( !prflag ) {
-				continue;
+		if ( !prflag ) {
+			continue;
+		}
+		while (true) {
+			if ( key >= i ) {
+				break;
 			}
-			while (true) {
-				if ( key >= i ) {
-					break;
-				}
-				if ( i % key == 0 ) {
-					prflag=false;
-					break;
-				} 
-				key +=2;
-			}
-			if ( (prflag == true) && (i != 0) ) {
-				push ( thrlist,i);
+			if ( i % key == 0 ) {
+				prflag=false;
+				break;
+			} 
+			key +=2;
+		}
+		if ( (prflag == true) && (i != 0) ) {
+			push ( lst,i);
+			if ( size (lst )== length ) {
+				return NULL;
 			}
 		}
 	}
-	num ++;
 
 	sem_post(&sema);
 	return NULL;
@@ -106,16 +80,15 @@ int main () {
 	list * lst = malloc ( sizeof( list ) ) ;
 	init_list (lst);
 	push (lst,2);
-	push (lst,3);
-	int n,m;
+	ll n;
 	printf ( "Threads : " ); 
 	scanf("%hd" , &thread_Num );
-	int length;
+	ll length;
 	printf ( "How much do you want? 5 - ??? " );
-	scanf ("%d" , &length );
-	if ( length < 1000 ) {
+	scanf ("%lld" , &length );
+	if ( length < 40000 ) {
 		bool prflag;
-		register int i , j;
+		register ll i , j;
 		for ( i = 3 ;; i += 2 ) {
 			prflag=true;
 			j = 3;
@@ -143,56 +116,50 @@ int main () {
 		end_time=clock();
 		double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 		printf ( "%lf sec \n" , time_sec);
-		printf ("biggest: %d , %dth\n" , lst -> rear -> prev -> key , size(lst) );
+		printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
 		exit (0);
 
 	}
 
 	func_prime_t thread_Prime [thread_Num];
 	pthread_t pthlist [thread_Num];
-	range_t range[thread_Num];
+	range_t range;
 	for ( n = 0 ; n < thread_Num ; n ++ ) {
 		thread_Prime[n] = t_Prime;
 	}	
+	range.end = 0;
 	start_time=clock();
-	for ( n = 0 , m = 3 ;; n++ , m +=2) {
+	for ( n = 0 ;n < 24; n++ ) {
 		if ( n > thread_Num-1 ) {
-			static int nn;
+			static ll nn;
 			for ( nn = 0 ; nn < thread_Num ; nn ++) {
 				pthread_join( pthlist[nn], NULL ) ;
 			} 
 
 			n %= thread_Num;
-			if ( size(lst) > length ) {
-				break;
-			}
 		}
-		range[n].lst = lst;
-		auto int mul = m - 2 ;
-		if ( mul < 0 ) {
-			mul = 0;
-		}
-
-
-		if ( length < 40000) {
-			range[n].start=mul*10+3;
-			range[n].end=m*10+3;
-			range[n].num=n;
-		}
-		if ( length >= 40000 ) {
-			range[n].start=mul*10000+5;
-			range[n].end=m*10000+5;
-			range[n].num=n;
-		}
-		pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range[n] ) ;
+		range.lst = lst;
+		range.length=length;
+		if ( n != 0 ) {
+			range.start=range.end;
+		} else {
+			range.start=5;
+		}	
+		range.end+=10000;
+		pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range ) ;
 		pthread_join ( pthlist[n],NULL);
+		show ( lst );
+		if ( size ( lst ) == length ){
+			break;
+		}
 
 	}
 
 	end_time=clock();
+	sort_func(lst);
 	double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 	printf ( "%lf sec \n" , time_sec);
-	printf ("biggest: %d , %dth\n" , lst -> rear -> prev -> key , size(lst) );
+	printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
 	exit (0);
 
 
