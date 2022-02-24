@@ -100,17 +100,14 @@ int main () {
 			if ( n == 0 ){ 
 				range[n].start=3;
 			} else {
-				range[n].start = range[n-1].end+2;
+				range[n].start = lst->rear->prev->key+2;
 			}
 			if(range[n].start % 2 == 0 ) {
 				range[n].start ++;
 			}
 			range[n].num=n;
-		pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range[n] ) ;
-
-	}
-	for ( n = 0 ; n < thread_Num ; n ++){
-		pthread_join( pthlist[n], NULL ) ;
+			pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range[n] ) ;
+			pthread_join( pthlist[n], NULL ) ;
 	}
 
 	end_time=clock();
