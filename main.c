@@ -23,7 +23,6 @@ typedef struct {
 sem_t sema;
 int fl;
 void * t_Prime (void *arg) { 
-	sem_wait(&sema);
 	range_t * rarg = (range_t *) arg;
 	ll start = rarg->start;
 	ll end = rarg->end;
@@ -41,16 +40,17 @@ void * t_Prime (void *arg) {
 				break;
 			} 
 		}
-
-		if (prflag == true) {
+		sem_wait(&sema);
+		if (prflag == true && find (lst , i ) == lst -> rear) {
 			push ( lst,i);
 			if ( size(lst) == end ) {
+				sem_post(&sema);
 				break;
 			}
 		}
+		sem_post(&sema);
 	}
 
-	sem_post(&sema);
 	return NULL;
 
 }
@@ -76,7 +76,6 @@ int main () {
 		exit (0);
 	}
 
-	start_time=clock();
 	func_prime_t thread_Prime [thread_Num];
 	pthread_t pthlist [thread_Num];
 	range_t range[thread_Num];
@@ -106,7 +105,12 @@ int main () {
 				range[n].start ++;
 			}
 			range[n].num=n;
+			if ( n == 0 ) {
+				start_time=clock();
+			}
 			pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range[n] ) ;
+	}
+	for ( n = 0 ; n < thread_Num ; n++ ) {
 			pthread_join( pthlist[n], NULL ) ;
 	}
 
