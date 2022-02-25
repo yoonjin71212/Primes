@@ -24,6 +24,7 @@ void push_list ( list * lst , list * lst_target ) ;
 ll remove_item ( list * lst , node * element ) ;
 ll pop_item ( list * lst ) ;
 ll size ( list *lst ) ;
+void repair_size ( list *lst ) ;
 _Bool empty ( list * lst ) ;
 void show ( list * lst ) ;
 void free_list ( list * lst ) ;

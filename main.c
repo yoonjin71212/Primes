@@ -10,47 +10,73 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <stdint.h>
-#include <semaphore.h>
 clock_t start_time , end_time;
-int length;
+ll length;
 short thread_Num ;
 typedef struct {
-	ll start;
-	ll end;
 	int num;
 	list * lst;
 } range_t;
-sem_t sema;
-int fl;
+pthread_mutex_t mutex;
+ll save = 0;
 void * t_Prime (void *arg) { 
-	range_t * rarg = (range_t *) arg;
-	ll start = rarg->start;
-	ll end = rarg->end;
-	int num = rarg -> num;
+	range_t* rarg = (range_t *) arg;
+	int num = rarg -> num + 1;
 	list * lst = rarg->lst;
 	ll key ;
 	printf ( "starting thread %d\n" ,num );
 	register ll i;
-	for ( i = start ;size(lst) < end; i+=2 ) {
+	for (i=3;size(lst) <= length;i+=2) {
 		bool prflag=true;
-		ll endpoint = (ll)sqrt(i)+1;
-		for ( key = 3; key < endpoint ; key +=2 ) {
-			if (i % key == 0) {
+		ll end_Num= (ll)(sqrt(i));
+		node * nd = lst -> front -> next;
+		key = 3;
+		while (key <= end_Num) {
+			if ((i % key == 0) && (i != key) ) {
 				prflag = false;
 				break;
-			} 
-		}
-		sem_wait(&sema);
-		if (prflag == true && find (lst , i ) == lst -> rear) {
-			push ( lst,i);
-			if ( size(lst) == end ) {
-				sem_post(&sema);
+			}
+			if ( nd -> key != 0 ) 
+				key = nd -> key;
+			else 
+				key += 2;
+			if ( nd == lst -> rear ) {
 				break;
 			}
+			if ( lst -> rear -> prev -> key > i ) {
+				i = lst -> rear -> prev -> key ;
+				end_Num=(ll)(sqrt(i));
+			} 
+			nd = nd -> next;
 		}
-		sem_post(&sema);
-	}
+		if ( prflag == false ) {
+			continue;
+		}
+		pthread_mutex_lock(&mutex);
+		if (prflag == true ) {
+			if ( find (lst,i) != lst -> rear ) {
+				pthread_mutex_unlock(&mutex);
+				continue;
+			} else {
+				push ( lst,i);
+			}
+			if ( thread_Num != num) {
+				if ( size (lst ) >= length/thread_Num*num ) {
+					break;
+				}
+			} 
+			pthread_mutex_unlock(&mutex);
+			if ( size ( lst ) >= length ) {
+				end_time=clock();
+				double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
+				printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
+				printf ( "%lf sec \n" , time_sec);
+				exit(0);
 
+			}
+		}
+	}
+	pthread_mutex_unlock(&mutex);
 	return NULL;
 
 }
@@ -59,7 +85,7 @@ typedef void * func_prime_t;
 
 int main () {
 
-	sem_init(&sema , 0 , 1);
+	pthread_mutex_init(&mutex , NULL);
 	list * lst = malloc ( sizeof( list ) ) ;
 	init_list (lst);
 	push (lst,2);
@@ -67,13 +93,20 @@ int main () {
 	printf ( "Threads : " ); 
 	scanf("%hd" , &thread_Num );
 	printf ( "How much do you want? 5 - ??? " );
-	scanf ("%d" , &length );
+	if ( (thread_Num % 2) == 1) {
+		thread_Num++;
+	}
+	scanf ("%lld" , &length );
+	start_time = clock();
 	if ( length == 1 ) {
 		end_time=clock();
 		double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 		printf ( "%lf sec \n" , time_sec);
 		printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
 		exit (0);
+	} else if ( length < thread_Num ) {
+		save = length;
+		length = thread_Num * 2;	
 	}
 
 	func_prime_t thread_Prime [thread_Num];
@@ -83,44 +116,27 @@ int main () {
 		thread_Prime[n] = t_Prime;
 	}	
 	for ( n = 0 ;n<thread_Num; n++ ) {
-		if ( n > thread_Num-1 ) {
-			n %= thread_Num;
-			if ( size(lst) > length ) {
-				break;
-			}
-		}
 		range[n].lst = lst;
-
-
-			range[n].end=length/thread_Num*(n+1);
-			if ( n == (thread_Num-1) ){
-				range[n].end = length;
-			}
-			if ( n == 0 ){ 
-				range[n].start=3;
-			} else {
-				range[n].start = lst->rear->prev->key+2;
-			}
-			if(range[n].start % 2 == 0 ) {
-				range[n].start ++;
-			}
-			range[n].num=n;
-			if ( n == 0 ) {
-				start_time=clock();
-			}
-			pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range[n] ) ;
+		range[n].num=n;
+		if ( n == 0 )
+			start_time=clock();
+		pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range[n] ) ;
 	}
-	for ( n = 0 ; n < thread_Num ; n++ ) {
-			pthread_join( pthlist[n], NULL ) ;
+	for ( n = 0 ; n <thread_Num;n++ ) {
+		pthread_join ( pthlist[n],NULL);
 	}
-
 	end_time=clock();
 	double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
-	printf ( "%lf sec \n" , time_sec);
-	printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
+	if ( save != 0 ) {
+		printf ("%lld , %lldth\n" , index_node( lst , save-1)->key , save );
+	} else {
+		show(lst);
+		printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
+		printf ( "%lf sec \n" , time_sec);
+	}
 	exit (0);
 
 
-     	    
+    	    
 
 }

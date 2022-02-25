@@ -18,8 +18,8 @@ void between( list * lst , ll item , node * b , node * n ) {
         element -> prev = b;
         element -> next = n ;
 	n -> prev = element ;
+    	lst -> size ++ ;
     }
-    lst -> size ++ ;
 }
 void push ( list * lst , ll item ) {
 	if ( lst -> size != 0 )	{
