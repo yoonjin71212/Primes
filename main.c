@@ -59,6 +59,7 @@ void * t_Prime (void *arg) {
 				continue;
 			} else {
 				push ( lst,i);
+				printf ("pushing %lld\n" , i ) ;
 			}
 			if ( thread_Num != num) {
 				if ( size (lst ) >= length/thread_Num*num ) {
