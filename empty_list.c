@@ -4,8 +4,8 @@
 void empty_list ( list * lst ) {
     node * element = lst -> front -> next ; // list is first value, that is next of the front node
     while ( element != lst -> rear ) { // while list is not rear node
-        free ( element ) ; // free the list
         element = element -> next ; // go to the next node
+        free ( element ) ; // free the list
     }
 	lst -> front -> next = lst -> rear ;
 	lst -> rear -> prev = lst -> front ;

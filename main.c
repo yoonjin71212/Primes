@@ -68,6 +68,7 @@ void * t_Prime (void *arg) {
 			} 
 			pthread_mutex_unlock(&mutex);
 			if ( size ( lst ) >= length ) {
+				sort_func(lst);
 				end_time=clock();
 				double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 				printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
