@@ -44,7 +44,7 @@ void * t_Prime (void *arg) {
 				break;
 			}
 			if ( lst -> rear -> prev -> key > i ) {
-				i = lst -> rear -> prev -> key ;
+				i = lst -> rear -> prev -> key;
 				end_Num=(ll)ceil(sqrt(i));
 			} 
 			nd = nd -> next;
@@ -52,8 +52,8 @@ void * t_Prime (void *arg) {
 		if ( prflag == false ) {
 			continue;
 		}
-		pthread_mutex_lock(&mutex);
 		if (prflag == true ) {
+			pthread_mutex_lock(&mutex);
 			if ( find (lst,i) != lst -> rear ) {
 				pthread_mutex_unlock(&mutex);
 				continue;
@@ -61,14 +61,13 @@ void * t_Prime (void *arg) {
 				push ( lst,i);
 				printf ("pushing %lld\n" , i ) ;
 			}
+			pthread_mutex_unlock(&mutex);
 			if ( thread_Num != num) {
 				if ( size (lst ) >= length/thread_Num*num ) {
 					break;
 				}
 			} 
-			pthread_mutex_unlock(&mutex);
 			if ( size ( lst ) >= length ) {
-				sort_func(lst);
 				end_time=clock();
 				double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 				printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
@@ -95,9 +94,6 @@ int main () {
 	printf ( "Threads : " ); 
 	scanf("%hd" , &thread_Num );
 	printf ( "How much do you want? 5 - ??? " );
-	if ( (thread_Num % 2) == 1) {
-		thread_Num++;
-	}
 	scanf ("%lld" , &length );
 	start_time = clock();
 	if ( length == 1 ) {
@@ -108,7 +104,7 @@ int main () {
 		exit (0);
 	} else if ( length < thread_Num ) {
 		save = length;
-		length = thread_Num * 2;	
+		length *= thread_Num;
 	}
 
 	func_prime_t thread_Prime [thread_Num];

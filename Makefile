@@ -1,6 +1,6 @@
 CC=gcc
 OBJS =find.o size.o swap.o remove.o between.o init_list.o empty_list.o main.o sort.o list.o
-CFLAGS = -Wall -Ofast -lm -pthread
+CFLAGS = -Wall -O0 -lm -pthread
 TARGET=list
 $(TARGET):	$(OBJS)
 	$(CC)  $(CFLAGS) -o  $@ $(OBJS)
