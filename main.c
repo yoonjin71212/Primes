@@ -28,7 +28,7 @@ void * t_Prime (void *arg) {
 	register ll i;
 	for (i=3;size(lst) <= length;i+=2) {
 		bool prflag=true;
-		ll end_Num= (ll)(sqrt(i));
+		register ll end_Num= (ll)ceil(sqrt(i));
 		node * nd = lst -> front -> next;
 		key = 3;
 		while (key <= end_Num) {
@@ -37,7 +37,7 @@ void * t_Prime (void *arg) {
 				break;
 			}
 			if ( nd -> key != 0 ) 
-				key = nd -> key;
+				key = key > nd -> key?key:nd->key;
 			else 
 				key += 2;
 			if ( nd == lst -> rear ) {
@@ -45,7 +45,7 @@ void * t_Prime (void *arg) {
 			}
 			if ( lst -> rear -> prev -> key > i ) {
 				i = lst -> rear -> prev -> key ;
-				end_Num=(ll)(sqrt(i));
+				end_Num=(ll)ceil(sqrt(i));
 			} 
 			nd = nd -> next;
 		}
