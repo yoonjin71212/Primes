@@ -22,11 +22,11 @@ void sort_func ( list * lst ) {
 		return;
 	}
 	int sz = lst -> size ;
-	auto list llst, rlst ;
+	list llst, rlst ;
 	init_list ( &llst );
 	init_list ( &rlst );
 	sortthree( lst );
-	node * piv = index_node ( lst , ( int ) ( ( float ) ( lst -> size / 2 ) + 0.5 ) ) /*lst -> front -> next*/ , * track = lst -> front -> next ;
+	node * piv = index_node ( lst , ( int )(rand()%lst->size) ) /*lst -> front -> next*/ , * track = lst -> front -> next ;
 	if ( lst -> is_sorted ) {
 		return;
 	}
@@ -84,7 +84,7 @@ void sort_func ( list * lst ) {
 	lst -> is_sorted = 1;
 }
 void bubble_sort ( list * lst ) {
-	register int i ;
+	int i ;
 	node * n;
 	for ( i = 0 ; i < lst -> size ; i ++ ) {
 		for ( n = lst -> front -> next ; n -> next != lst -> rear ; n = n -> next ) {

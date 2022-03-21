@@ -25,10 +25,10 @@ void * t_Prime (void *arg) {
 	list * lst = rarg->lst;
 	ll key ;
 	printf ( "starting thread %d\n" ,num );
-	register ll i;
+	ll i;
 	for (i=3;size(lst) <= length;i+=2) {
 		bool prflag=true;
-		register ll end_Num= (ll)ceil(sqrt(i));
+		ll end_Num= (ll)ceil(sqrt(i));
 		node * nd = lst -> front -> next;
 		key = 3;
 		while (key <= end_Num) {
@@ -52,22 +52,18 @@ void * t_Prime (void *arg) {
 		if ( prflag == false ) {
 			continue;
 		}
+		pthread_mutex_lock(&mutex);
 		if (prflag == true ) {
-			pthread_mutex_lock(&mutex);
-			if ( find (lst,i) != lst -> rear ) {
-				pthread_mutex_unlock(&mutex);
-				continue;
-			} else {
+			if ( index_node( lst , length )-> key < i ) {
 				push ( lst,i);
 				printf ("pushing %lld\n" , i ) ;
 			}
-			pthread_mutex_unlock(&mutex);
 			if ( thread_Num != num) {
 				if ( size (lst ) >= length/thread_Num*num ) {
 					break;
 				}
 			} 
-			if ( size ( lst ) >= length ) {
+			if ( size ( lst ) == length ) {
 				end_time=clock();
 				double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 				printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
@@ -76,6 +72,7 @@ void * t_Prime (void *arg) {
 
 			}
 		}
+		pthread_mutex_unlock(&mutex);
 	}
 	pthread_mutex_unlock(&mutex);
 	return NULL;
@@ -87,9 +84,9 @@ typedef void * func_prime_t;
 int main () {
 
 	pthread_mutex_init(&mutex , NULL);
-	list * lst = malloc ( sizeof( list ) ) ;
-	init_list (lst);
-	push (lst,2);
+	list lst; 
+	init_list (&lst);
+	push (&lst,2);
 	ll n;
 	printf ( "Threads : " ); 
 	scanf("%hd" , &thread_Num );
@@ -100,7 +97,7 @@ int main () {
 		end_time=clock();
 		double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 		printf ( "%lf sec \n" , time_sec);
-		printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
+		printf ("biggest: %lld , %lldth\n" , lst.rear -> prev -> key , size(&lst) );
 		exit (0);
 	} else if ( length < thread_Num ) {
 		save = length;
@@ -114,7 +111,7 @@ int main () {
 		thread_Prime[n] = t_Prime;
 	}	
 	for ( n = 0 ;n<thread_Num; n++ ) {
-		range[n].lst = lst;
+		range[n].lst = &lst;
 		range[n].num=n;
 		if ( n == 0 )
 			start_time=clock();
@@ -126,10 +123,10 @@ int main () {
 	end_time=clock();
 	double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
 	if ( save != 0 ) {
-		printf ("%lld , %lldth\n" , index_node( lst , save-1)->key , save );
+		printf ("%lld , %lldth\n" , index_node( &lst , save-1)->key , save );
 	} else {
-		show(lst);
-		printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
+		show(&lst);
+		printf ("biggest: %lld , %lldth\n" , lst.rear -> prev -> key , size(&lst) );
 		printf ( "%lf sec \n" , time_sec);
 	}
 	exit (0);
