@@ -64,12 +64,7 @@ void * t_Prime (void *arg) {
 				}
 			} 
 			if ( size ( lst ) == length ) {
-				end_time=clock();
-				double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
-				printf ("biggest: %lld , %lldth\n" , lst -> rear -> prev -> key , size(lst) );
-				printf ( "%lf sec \n" , time_sec);
-				exit(0);
-
+				break;
 			}
 		}
 		pthread_mutex_unlock(&mutex);
@@ -125,7 +120,6 @@ int main () {
 	if ( save != 0 ) {
 		printf ("%lld , %lldth\n" , index_node( &lst , save-1)->key , save );
 	} else {
-		show(&lst);
 		printf ("biggest: %lld , %lldth\n" , lst.rear -> prev -> key , size(&lst) );
 		printf ( "%lf sec \n" , time_sec);
 	}
