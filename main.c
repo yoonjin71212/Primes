@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <stdint.h>
-clock_t start_time , end_time;
+struct timespec start_time , end_time;
 ll length;
 short thread_Num ;
 typedef struct {
@@ -86,12 +86,9 @@ int main () {
 	printf ( "Threads : " ); 
 	scanf("%hd" , &thread_Num );
 	printf ( "How much do you want? 5 - ??? " );
+
 	scanf ("%lld" , &length );
-	start_time = clock();
 	if ( length == 1 ) {
-		end_time=clock();
-		double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
-		printf ( "%lf sec \n" , time_sec);
 		printf ("biggest: %lld , %lldth\n" , lst.rear -> prev -> key , size(&lst) );
 		exit (0);
 	} else if ( length < thread_Num ) {
@@ -109,16 +106,17 @@ int main () {
 		range[n].lst = &lst;
 		range[n].num=n;
 		if ( n == 0 )
-			start_time=clock();
+			clock_gettime(CLOCK_MONOTONIC,&start_time);
 		pthread_create ( (pthlist + (n) ), NULL , thread_Prime[n] , (void *)&range[n] ) ;
 	}
 	for ( n = 0 ; n <thread_Num;n++ ) {
 		pthread_join ( pthlist[n],NULL);
 	}
-	end_time=clock();
-	double time_sec = (end_time - start_time) / CLOCKS_PER_SEC;
+	clock_gettime(CLOCK_MONOTONIC,&end_time);
+	double time_sec = ((end_time.tv_sec-start_time.tv_sec)*1000000000L - (end_time.tv_nsec - start_time.tv_nsec)) / 1000000000L;
 	if ( save != 0 ) {
 		printf ("%lld , %lldth\n" , index_node( &lst , save-1)->key , save );
+		printf ( "%lf sec \n" , time_sec);
 	} else {
 		printf ("biggest: %lld , %lldth\n" , lst.rear -> prev -> key , size(&lst) );
 		printf ( "%lf sec \n" , time_sec);
