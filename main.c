@@ -55,6 +55,9 @@ void * t_Prime (void *arg) {
 		pthread_mutex_lock(&mutex);
 		if (prflag == true ) {
 			if ( index_node( lst , length )-> key < i ) {
+	                         if ( size ( lst ) == length ) {
+			                  break;
+			         }
 				push ( lst,i);
 				printf ("pushing %lld\n" , i ) ;
 			}
