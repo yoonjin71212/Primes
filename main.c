@@ -70,7 +70,7 @@ int main () {
 	clock_gettime(CLOCK_MONOTONIC,&start_time);
 	t_Prime((void *)&range);
 	clock_gettime(CLOCK_MONOTONIC,&end_time);
-	double time_sec = ((end_time.tv_sec-start_time.tv_sec)*1000000000L - (end_time.tv_nsec - start_time.tv_nsec)) / 1000000000L;
+	double time_sec = ((end_time.tv_sec-start_time.tv_sec)*1000000000.0F - (end_time.tv_nsec - start_time.tv_nsec)) / 1000000000.0F;
 	if ( save != 0 ) {
 		printf ("%lld , %lldth\n" , index_node( &lst , save-1)->key , save );
 		printf ( "%lf sec \n" , time_sec);
