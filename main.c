@@ -5,12 +5,10 @@
 #include "list.h"
 #include <math.h>
 #include <stdbool.h>
-#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <stdint.h>
-struct timespec start_time , end_time;
+time_t start_time , end_time;
 ll length;
 short thread_Num ;
 typedef struct {
@@ -67,16 +65,16 @@ int main () {
 	scanf ("%lld" , &length );
 	range_t range;
 	range.lst = &lst;
-	clock_gettime(CLOCK_MONOTONIC,&start_time);
+	time(&start_time);
 	t_Prime((void *)&range);
-	clock_gettime(CLOCK_MONOTONIC,&end_time);
-	double time_sec = ((end_time.tv_sec-start_time.tv_sec)*1000000000.0F - (end_time.tv_nsec - start_time.tv_nsec)) / 1000000000.0F;
+	time(&end_time);
+	double time_sec = difftime(end_time , start_time);
 	if ( save != 0 ) {
 		printf ("%lld , %lldth\n" , index_node( &lst , save-1)->key , save );
-		printf ( "%lf sec \n" , time_sec);
+		printf ( "%ld sec \n" , (long)time_sec);
 	} else {
 		printf ("biggest: %lld , %lldth\n" , lst.rear -> prev -> key , size(&lst) );
-		printf ( "%lf sec \n" , time_sec);
+		printf ( "%ld sec \n" , (long)time_sec);
 	}
 	return 0;
 

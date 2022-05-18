@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "list.h"
 #include <string.h>
-// add number between two nodes
+/* add number between two nodes */
 void between( list * lst , ll item , node * b , node * n ) {
     node * element ;
     if ( ( element = ( node * ) malloc ( sizeof ( node ) ) ) == NULL ) {

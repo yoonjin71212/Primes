@@ -2,7 +2,7 @@
 #include "list.h"
 #include <stdbool.h>
 
-// return size of list
+/* return size of list */
 ll size ( list * lst ) {
 	return lst -> size ;
 }
@@ -15,7 +15,7 @@ void repair_size ( list * lst ) {
 	lst -> size = sz;
 		
 }
-// check if list is empty
+/* check if list is empty */
 bool empty ( list * lst ) {
     if ( lst -> size == 0 ) {
         return true ;

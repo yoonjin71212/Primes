@@ -1,7 +1,7 @@
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
-// find node
+/* find node */
 node * find ( list * lst, ll key ) {
 	node * p;
 	p = lst -> front -> next ;

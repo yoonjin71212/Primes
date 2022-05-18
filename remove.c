@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "list.h"
-// function that removes the item
+/* function that removes the item */
 ll remove_item ( list * lst , node * element )
 {	
 	ll val;
