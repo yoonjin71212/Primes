@@ -1,6 +1,6 @@
-CC=gcc
+CC=clang
 OBJS =find.o size.o swap.o remove.o between.o init_list.o empty_list.o main.o sort.o list.o
-CFLAGS = -Wall -O2 -lm -std=c89
+CFLAGS = -Wall -O2 -std=c99 -lm
 TARGET=list
 $(TARGET):	$(OBJS)
 	$(CC)  $(CFLAGS) -o  $@ $(OBJS)

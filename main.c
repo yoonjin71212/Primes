@@ -48,7 +48,7 @@ void t_Prime (void *arg) {
 		}
 		if (prflag == true ) {
 			push ( lst,i);
-			printf ("pushing %lld\n" , i ) ;
+//			printf ("pushing %lld\n" , i ) ;
 			if ( size ( lst ) == length ) {
 				break;
 			}
@@ -56,13 +56,15 @@ void t_Prime (void *arg) {
 	}
 
 }
-int main () {
+int main (int argc, char **argv) {
 
+  if(argc<2) {
+      return 1;
+  }
 	list lst; 
 	init_list (&lst);
 	push (&lst,2);
-	printf ( "How much do you want? : " );
-	scanf ("%lld" , &length );
+  length=(ll)strtoll(argv[1],NULL,10);
 	range_t range;
 	range.lst = &lst;
 	time(&start_time);
